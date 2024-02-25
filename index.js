@@ -1,6 +1,6 @@
 require('dotenv').config(); //initialize dotenv
 const Discord = require('discord.js'); //import discord.js
-var cron = require("cron");
+// var cron = require("cron");
 
 const client = new Discord.Client({
     intents: [
@@ -32,13 +32,20 @@ function check_old_reports() {
 client.on('messageCreate', async msg => {
     // just in case to stop bots, may have to change behaviour later
     if (msg.author.bot) return;
-    
-        if (regx.test(msg.content) === true) {
-            msg.reply(get_desired_content(msg.content)).catch(console.error);
-        } else if (msg.content === 'ping') {
-            msg.reply("pong <:jebacpolsl:987745197087686718>")
-                .catch(console.error);
+    if(msg.content[0] == "!") {
+        if (msg.channel.id != process.env.CHANNEL_ID) {
+            str = "Incorrect channel, please use <#" + process.env.CHANNEL_ID
+                + "> for any bot commands."
+            msg.reply(str).catch(console.error);
         }
+    }
+    // if (msg.channel.id != process.env.CHANNEL_ID) return;
+    //     if (regx.test(msg.content) === true) {
+    //         msg.reply(get_desired_content(msg.content)).catch(console.error);
+    //     } else if (msg.content === 'ping') {
+    //         msg.reply("pong <:jebacpolsl:987745197087686718>")
+    //             .catch(console.error);
+    //     }
 });
 
 //make sure this line is the last line
