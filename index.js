@@ -1,6 +1,4 @@
-require('dotenv').config(); //initialize dotenv
-
-const client = require('./bot.js')
+import client from './bot.js'
 // var cron = require("cron");
 
 //add job to check once a day any reports that are week old
