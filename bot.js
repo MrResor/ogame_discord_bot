@@ -1,6 +1,5 @@
-const Discord = require('discord.js'); //import discord.js
-const mysql = require('mysql2'); //import for mysql connection
-var messages = require('./messages') //import text for messages
+import Discord from 'discord.js'; // import discord.js
+import * as bot_func from './bot_functions.js' // import bot functionality
 
 const client = new Discord.Client({
     intents: [
@@ -9,53 +8,34 @@ const client = new Discord.Client({
         Discord.GatewayIntentBits.MessageContent,
         Discord.GatewayIntentBits.GuildMembers
     ]
-}); //create new client
-
-const con = mysql.createConnection({
-    host: "localhost",
-    user: process.env.DB_LOGIN,
-    password: process.env.DB_PASS,
-    database: "ogame_db"
-}); //create database connection
+}); // create new client
 
 // login init
 client.on('ready', () => {
-    //add db connection
+    // add db connection
     console.log(`Logged in as ${client.user.tag}!`);
-    con.connect(function (err) {
-        if (err) throw err;
-        console.log("Connected!");
-    });
-    //job.start();
+    // job.start();
 });
 
-//check messages
+// check messages
 client.on('messageCreate', async msg => {
     // just in case to stop bots, may have to change behaviour later
     if (msg.author.bot) return;
     if (msg.content.startsWith("!")) {
         if (msg.channel.id != process.env.CHANNEL_ID) {
-            str = messages['wrong_channel1'] + process.env.CHANNEL_ID
-                + messages['wrong_channel2'];
-            msg.reply(str).catch(console.error);
+            bot_func.wrong_channel(msg);
         } else if (msg.content == "!help") {
-            msg.reply(messages['help_short']).catch(console.error)
-            msg.reply(messages['help_full']).catch(console.error)
+            bot_func.print_help(msg);
         } else if (msg.content.startsWith("!add_user ")) {
-            console.log(msg.author["globalName"])
-            console.log(msg.content)
+            bot_func.add_user(msg)
         } else {
-            msg.reply(messages['unknown_command'])
-                .catch(console.error)
+            bot_func.unknown_command(msg);
         }
     }
-    // if (msg.channel.id != process.env.CHANNEL_ID) return;
-    //     if (regx.test(msg.content) === true) {
-    //         msg.reply(get_desired_content(msg.content)).catch(console.error);
-    //     } else if (msg.content === 'ping') {
-    //         msg.reply("pong <:jebacpolsl:987745197087686718>")
-    //             .catch(console.error);
-    //     }
 });
 
-module.exports = client
+function test(res) {
+    console.log(res);
+}
+
+export default client
