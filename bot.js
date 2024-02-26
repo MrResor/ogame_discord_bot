@@ -35,17 +35,17 @@ client.on('messageCreate', async msg => {
     if (msg.author.bot) return;
     if (msg.content.startsWith("!")) {
         if (msg.channel.id != process.env.CHANNEL_ID) {
-            str = messages.text('wrong_channel1') + process.env.CHANNEL_ID
-                + messages.text('wrong_channel2');
+            str = messages['wrong_channel1'] + process.env.CHANNEL_ID
+                + messages['wrong_channel2'];
             msg.reply(str).catch(console.error);
         } else if (msg.content == "!help") {
-            msg.reply(messages.text('help_short')).catch(console.error)
-            msg.reply(messages.text('help_full')).catch(console.error)
+            msg.reply(messages['help_short']).catch(console.error)
+            msg.reply(messages['help_full']).catch(console.error)
         } else if (msg.content.startsWith("!add_user ")) {
             console.log(msg.author["globalName"])
             console.log(msg.content)
         } else {
-            msg.reply(messages.text('unknown_command'))
+            msg.reply(messages['unknown_command'])
                 .catch(console.error)
         }
     }
