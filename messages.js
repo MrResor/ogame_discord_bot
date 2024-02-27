@@ -7,7 +7,6 @@ const messages = {
     help_full: '!add_user\t->\tRequires a string from second API available in the fleet menu, but cut out after research.\n'
         + 'Example: "!add_user {"coords":"0:000:0","characterClassId":0,"allianceClassId":0,"research":{"109":8, "110":7, "111": 9, "114": 4, "115": 11, "117": 6, "118": 3"}}',
     wrong_data: 'Incorrect input, please type "!help" to see information about correct one.'
-    
 }
 
 export default messages;
