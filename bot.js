@@ -34,8 +34,4 @@ client.on('messageCreate', async msg => {
     }
 });
 
-function test(res) {
-    console.log(res);
-}
-
 export default client
