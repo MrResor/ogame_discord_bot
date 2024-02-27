@@ -27,11 +27,11 @@ client.on('messageCreate', async msg => {
         } else if (msg.content == "!help") {
             bot_func.print_help(msg);
         } else if (msg.content.startsWith("!add_user ")) {
-            bot_func.add_user(msg)
+            bot_func.add_user(msg);
         } else {
             bot_func.unknown_command(msg);
         }
     }
 });
 
-export default client
+export default client;

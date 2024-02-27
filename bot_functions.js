@@ -10,6 +10,7 @@ const con = await mysql.createConnection({
     database: "ogame_db"
 }); // create database connection
 
+// function for comparing arrays i found on the internet
 function array_equals(a, b) {
     return Array.isArray(a) &&
         Array.isArray(b) &&
@@ -17,8 +18,9 @@ function array_equals(a, b) {
         a.every((val, index) => val === b[index]);
 }
 
-const req_keys1 = ['coords', 'characterClassId', 'allianceClassId', 'research']
-const req_keys2 = ['109', '110', '111', '114', '115', '117', '118']
+// constants for adding user
+const req_keys1 = ['coords', 'characterClassId', 'allianceClassId', 'research'];
+const req_keys2 = ['109', '110', '111', '114', '115', '117', '118'];
 
 function wrong_channel(msg) {
     str = messages['wrong_channel1'] + process.env.CHANNEL_ID
@@ -27,17 +29,17 @@ function wrong_channel(msg) {
 }
 
 function print_help(msg) {
-    msg.reply(messages['help_short']).catch(console.error)
-    msg.reply(messages['help_full']).catch(console.error)
+    msg.reply(messages['help_short']).catch(console.error);
+    msg.reply(messages['help_full']).catch(console.error);
 }
 
 function unknown_command(msg) {
-    msg.reply(messages['unknown_command']).catch(console.error)
+    msg.reply(messages['unknown_command']).catch(console.error);
 }
 
 async function add_user(msg) {
     // check input
-    let input = JSON.parse(msg.content.slice(10))
+    let input = JSON.parse(msg.content.slice(10));
     if (!array_equals(Object.keys(input), req_keys1)) {
         // wrong data message
         msg.reply(messages['wrong_data']);
@@ -55,4 +57,4 @@ async function add_user(msg) {
     //const [result] = await con.query("SELECT * FROM users WHERE username = ?",[msg.author['globalName']]);
 }
 
-export { wrong_channel, print_help, unknown_command, add_user }
+export { wrong_channel, print_help, unknown_command, add_user };
