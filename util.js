@@ -6,4 +6,4 @@ function array_equals(a, b) {
         a.every((val, index) => val === b[index]);
 }
 
-export {array_equals};
+export { array_equals };
