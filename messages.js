@@ -17,8 +17,6 @@ const messages = {
     planet_add1: 'Planet ',
     planet_add2: ' added to database with id ',
     planet_add3: '.',
-    planets1: '```\n+----+----------+\n| id |  coords  |\n+----+----------+\n',
-    planets2: '+----+----------+```'
 }
 
 export default messages;
