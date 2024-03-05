@@ -21,13 +21,19 @@ client.on('ready', () => {
 client.on('messageCreate', async msg => {
     // just in case to stop bots, may have to change behaviour later
     if (msg.author.bot) return;
-    if (msg.content.startsWith("!")) {
+    if (msg.content.startsWith('!')) {
         if (msg.channel.id != process.env.CHANNEL_ID) {
             bot_func.wrong_channel(msg);
-        } else if (msg.content == "!help") {
+        } else if (msg.content == '!help') {
             bot_func.print_help(msg);
-        } else if (msg.content.startsWith("!add_user ")) {
+        } else if (msg.content.startsWith('!add_user ')) {
             bot_func.add_user(msg);
+        } else if (msg.content == '!planets') {
+            bot_func.planets(msg);
+        } else if (msg.content.startsWith('!add_planet ')) {
+            msg.reply('Add planet func').error(console.error);
+        } else if (msg.startsWith('!update_user')) {
+            msg.reply('Add planet func').error(console.error);
         } else {
             bot_func.unknown_command(msg);
         }
