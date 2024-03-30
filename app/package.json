@@ -12,8 +12,10 @@
   "license": "ISC",
   "dependencies": {
     "ascii-table3": "^0.9.0",
+    "cheerio": "^1.0.0-rc.12",
     "discord.js": "^14.12.1",
     "dotenv": "^16.4.5",
-    "mysql2": "^3.9.1"
+    "mysql2": "^3.9.1",
+    "request": "^2.88.2"
   }
 }
