@@ -26,14 +26,18 @@ client.on('messageCreate', async msg => {
             bot_func.wrong_channel(msg);
         } else if (msg.content == '!help') {
             bot_func.print_help(msg);
+        } else if (msg.content.startsWith('!help ')) {
+            bot_func.print_full_help(msg);
         } else if (msg.content.startsWith('!add_user ')) {
             bot_func.add_user(msg);
         } else if (msg.content == '!planets') {
             bot_func.planets(msg);
         } else if (msg.content.startsWith('!add_planet ')) {
-            msg.reply('Add planet func').error(console.error);
-        } else if (msg.startsWith('!update_user')) {
-            msg.reply('Add planet func').error(console.error);
+            bot_func.add_planet(msg);
+        } else if (msg.content.startsWith('!update_user ')) {
+            bot_func.update_tech(msg);
+        } else if (msg.content.startsWith('!add_report ')) {
+            msg.reply('Adding report').catch(console.error);
         } else {
             bot_func.unknown_command(msg);
         }
