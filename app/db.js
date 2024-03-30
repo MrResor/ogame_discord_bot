@@ -27,39 +27,38 @@ async function add_user(msg) {
     await con.query(query, values);
 }
 
-async function add_planet(msg) {
+async function add_planet(msg, coords) {
     // no user error
     let res = await get_user_id(msg);
-    if (util.array_equals(res, [])) return [-1];
+    if (util.array_equals(res, [])) return -1;
     const userid = res[0]['id'];
 
     // check if the planet is already added
-    res = await get_planet_id(msg);
-    if (!util.array_equals(res, [])) return [-2];
+    res = await get_planet_id(coords);
+    if (!util.array_equals(res, [])) return -2;
 
     // get max index of planet for that user
-    let query = `SELECT MAX(P.id) FROM planets AS P JOIN users AS U ON
-                    P.user_id = U.id WHERE U.username = ?;`;
+    let query = 'SELECT MAX(P.id) FROM planets AS P JOIN users AS U ON '
+        + 'P.user_id = U.id WHERE U.username = ?;';
     let values = [msg.author['globalName']];
     [res] = await con.query(query, values);
 
     // add the planet
-    if (res['MAX(P.id)'] == null) res['MAX(P.id)'] = 0;
-    const input = JSON.parse(msg.content.slice(10));
-    const coords = input['coords'].split(':').map(Number);
+    if (res[0]['MAX(P.id)'] == null) res[0]['MAX(P.id)'] = 0;
+
     query = 'INSERT INTO planets VALUES (?, ?, ?, ?, ?, ?);';
-    values = [0, res['MAX(P.id)'] + 1, userid, coords[0], coords[1], coords[2]];
+    values = [0, res[0]['MAX(P.id)'] + 1, userid, coords[0], coords[1], coords[2]];
     await con.query(query, values);
 
     // return coords and id
-    return [res['MAX(P.id)'] + 1, input['coords']];
+    return res[0]['MAX(P.id)'] + 1;
 }
 
-async function update_tech(msg) {
-    const input = JSON.parse(msg.content.slice(10));
+async function update_tech(msg, input) {
     const tech = input['researches'];
-    let values = []
-    let query = `SELECT class, fight, shield, armor, hyperspace, fuel_drive, pulse_drive, hyper_drive FROM users WHERE username = ?`
+    let values = [msg.author['globalName']]
+    let query = 'SELECT class, fight, shield, armor, hyperspace, fuel_drive, '
+        + 'pulse_drive, hyper_drive FROM users WHERE username = ?;';
     const [res] = await con.query(query, values)
     values = [input['characterClassId'], tech['109'], tech['110'],
     tech['111'], tech['114'], tech['115'], tech['117'],
@@ -71,10 +70,10 @@ async function update_tech(msg) {
     if (util.array_equals(values, data)) {
         return -1;
     } else {
-        query = `UPDATE users SET class = ?, fight = ?, shield = ?,
-                    armor = ?, hyperspace = ?, fuel_drive = ?,
-                    pulse_drive = ?, hyper_drive = ? WHERE username = ?;`;
-        values = values.push(msg.author['globalName']);
+        query = 'UPDATE users SET class = ?, fight = ?, shield = ?, armor = ?,'
+            + ' hyperspace = ?, fuel_drive = ?, pulse_drive = ?, '
+            + 'hyper_drive = ? WHERE username = ?;';
+        values.push(msg.author['globalName']);
         await con.query(query, values);
         return 0;
     }
@@ -89,9 +88,7 @@ async function get_planets(msg) {
     return res;
 }
 
-async function get_planet_id(msg) {
-    const input = JSON.parse(msg.content.slice(10));
-    const coords = input['coords'].split(':').map(Number);
+async function get_planet_id(coords) {
     const query = `SELECT id FROM planets AS P WHERE P.galaxy = ? AND P.system
                     = ? AND P.place = ?;`;
     const values = [coords[0], coords[1], coords[2]];
@@ -99,4 +96,4 @@ async function get_planet_id(msg) {
     return res;
 }
 
-export { get_user_id, add_user, add_planet, update_tech, get_planets };
+export { get_user_id, add_user, add_planet, update_tech, get_planets }
