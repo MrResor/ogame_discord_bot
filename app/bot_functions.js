@@ -1,11 +1,7 @@
 import messages from './messages.js'; //import text for messages
 import * as db from './db.js';
-import * as util from './util.js';
 import { AsciiTable3 } from 'ascii-table3';
-
-// constants for adding user
-const req_keys1 = ['coords', 'characterClassId', 'allianceClassId', 'researches'];
-const req_keys2 = ['109', '110', '111', '114', '115', '117', '118'];
+import * as user_add from './add_user.js';
 
 function wrong_channel(msg) {
     let str = messages['wrong_channel1'] + process.env.CHANNEL_ID
@@ -14,79 +10,91 @@ function wrong_channel(msg) {
 }
 
 function print_help(msg) {
-    msg.reply(messages['help_short']).catch(console.error);
-    msg.reply(messages['help_full']).catch(console.error);
+    msg.reply(messages['help']).catch(console.error);
+}
+
+function print_full_help(msg) {
+    let str = messages['help_' + msg.content.slice(6)];
+    if (str === undefined) {
+        str = messages['unknown_command1'] + "!" + msg.content.slice(6) +
+            messages['unknown_command2'];
+    }
+    msg.reply(str).catch(console.error);
 }
 
 function unknown_command(msg) {
-    msg.reply(messages['unknown_command']).catch(console.error);
+    const str = messages['unknown_command1'] + msg.content +
+        messages['unknown_command2'];
+    msg.reply(str).catch(console.error);
 }
 
 async function add_user(msg) {
     // check input
-    if (add_check_input(msg)) return;
-    
-    // check if user is in the database
-    let res = await db.get_user_id(msg);
-    if (util.array_equals(Object.keys(res), [])) {
-        // if user is not there add him
-        await adding_user(msg);
-    } else {
+    let check = user_add.add_check_input(msg);
+    switch (check) {
+        case -1:
+            msg.reply(messages['wrong_data']).catch(console.error);
+            return;
+        case -2:
+            msg.reply(messages['wrong_format']).catch(console.error);
+            return;
+    }
+    // if user is not there add him
+    if (await user_add.adding_user(msg) == -1) {
         // if user is there update technologies
+        msg.reply(messages['user_present']).catch(console.error);
         await update_tech(msg);
-    }
-    // check if planet is already added, if not add it
-    await adding_planet(msg);
-}
-
-function add_check_input(msg) {
-    const input = JSON.parse(msg.content.slice(10));
-    let correct = false;
-    // wrong data messages
-    if (!util.array_equals(Object.keys(input), req_keys1)) {
-        msg.reply(messages['wrong_data']).catch(console.error);
-        correct = true;
-    }
-    if (!util.array_equals(Object.keys(input['researches']), req_keys2)) {
-        msg.reply(messages['wrong_data']).catch(console.error);
-        correct = true;
-    }
-    return correct;
-}
-
-async function adding_user(msg) {
-    const res = await db.get_user_id(msg);
-    if (!util.array_equals(res, [])) {
-        msg.reply(messages['user_present']);
-        return;
     } else {
-        await db.add_user(msg);
         const str = messages['add_user1'] + msg.author["globalName"]
             + messages['add_user2'];
         msg.reply(str).catch(console.error);
     }
+    // check if planet is already added, if not add it
+    const coords = JSON.parse(msg.content.slice(10))['coords'];
+    await adding_planet(msg, coords);
 }
 
-async function adding_planet(msg) {
-    const res = await db.add_planet(msg);
-    if (res[0] == -1) {
-        msg.reply(messages['no_user']).catch(console.error);;
-    } else if (res[0] == -2) {
-        msg.reply(messages['planet_present']).catch(console.error);;
+async function adding_planet(msg, input) {
+    const coords = input.split(':').map(Number);
+    if (coords.length != 3) {
+        msg.reply(messages['wrong_format_coords']).catch(console.error);
+        return;
     }
-    else {
-        const str = messages['planet_add1'] + res[1] + messages['planet_add2']
-            + res[0].toString() + messages['planet_add3'];
-        msg.reply(str).catch(console.error);;
+    if (coords[0] < 1 || coords[0] > 9 || coords[1] < 1 || coords[1] > 499
+        || coords[2] < 1 || coords[2] > 15) {
+        msg.reply(messages['wrong_format_coords']).catch(console.error);
+        return;
     }
+
+    const res = await db.add_planet(msg, coords);
+    if (res == -1) {
+        msg.reply(messages['no_user']).catch(console.error);
+    } else if (res == -2) {
+        msg.reply(messages['planet_present']).catch(console.error);
+    } else {
+        const str = messages['planet_add1'] + input + messages['planet_add2']
+            + res.toString() + messages['planet_add3'];
+        msg.reply(str).catch(console.error);
+    }
+}
+
+async function add_planet(msg) {
+    const coords = msg.content.split(" ")[1];
+    await adding_planet(msg, coords);
 }
 
 async function update_tech(msg) {
-    const res = await db.update_tech(msg);
+    var input;
+    try {
+        input = JSON.parse(msg.content.split(" ")[1]);
+    } catch (SyntaxError) {
+        msg.reply(messages['wrong_format']).catch(console.error);
+    }
+    const res = await db.update_tech(msg, input);
     if (res == 0) {
-        msg.reply(messages['update']).catch(console.error);;
+        msg.reply(messages['update']).catch(console.error);
     } else {
-        msg.reply(messages['no_update']).catch(console.error);;
+        msg.reply(messages['no_update']).catch(console.error);
     }
 }
 
@@ -101,4 +109,4 @@ async function planets(msg) {
     msg.reply('```\n' + table.toString() + '```').catch(console.error);
 }
 
-export { wrong_channel, print_help, unknown_command, add_user, planets };
+export { wrong_channel, print_help, unknown_command, add_user, planets, print_full_help, add_planet, update_tech };
